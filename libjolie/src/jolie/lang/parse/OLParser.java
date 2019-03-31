@@ -291,13 +291,16 @@ public class OLParser extends AbstractParser
 			throws IOException, ParserException
 	{
 		eat( Scanner.TokenType.LCURLY, "expected {" );
-
 		if ( token.is( Scanner.TokenType.QUESTION_MARK ) ) {
 			type.setUntypedSubTypes( true );
 			getToken();
 		} else {
-			TypeDefinition currentSubType;
+			TypeDefinition currentSubType =null;
 			while( !token.is( Scanner.TokenType.RCURLY ) ) {
+				if ( token.is( Scanner.TokenType.DOCUMENTATION_COMMENT )){
+				 currentSubType.setDocumentation( token.content());
+				 getToken();
+				}else{
 				eat( Scanner.TokenType.DOT, "sub-type syntax error (dot not found)" );
 
 				// SubType id
@@ -316,6 +319,7 @@ public class OLParser extends AbstractParser
 					throwException( "sub-type " + currentSubType.id() + " conflicts with another sub-type with the same name" );
 				}
 				type.putSubType( currentSubType );
+				}
 			}
 		}
 
@@ -335,6 +339,7 @@ public class OLParser extends AbstractParser
 		} else {
 			getToken();
 			subType = new TypeInlineDefinition( getContext(), id, nativeType, cardinality );
+			
 			if ( token.is( Scanner.TokenType.LCURLY ) ) { // Has ulterior sub-types
 				parseSubTypes((TypeInlineDefinition) subType);
 			}
