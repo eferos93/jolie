@@ -317,17 +317,6 @@ class TypeChoice extends Type
 		}
 	}
         
-<<<<<<< HEAD:jolie/src/jolie/runtime/typing/Type.java
-        @Override
-        public Type getMinimalType( Value value ) {
-                Type leftType = this.left().getMinimalType( value );
-                if ( leftType != null ) {
-                        return leftType;
-                } else {
-                    return this.right().getMinimalType( value );
-                }
-        }
-=======
 	@Override
 	public Optional< Type > getMinimalType( Value value )
 	{
@@ -338,7 +327,6 @@ class TypeChoice extends Type
 			return right().getMinimalType( value );
 		}
 	}
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:jolie/src/main/java/jolie/runtime/typing/Type.java
         
 	@Override
 	protected Value cast( Value value, StringBuilder pathBuilder )
@@ -471,20 +459,7 @@ public abstract class Type implements Cloneable
 	{
 		check( value, new StringBuilder( "#Message" ) );
 	}
-<<<<<<< HEAD:jolie/src/jolie/runtime/typing/Type.java
-        
-        public Type getMinimalType( Value value ) {
-                try {
-                        check( value );
-                        return this;
-                } catch (TypeCheckingException ex) {
-                        return null;
-                }
-        }
-        
-=======
     
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:jolie/src/main/java/jolie/runtime/typing/Type.java
 	public Value cast( Value value )
 		throws TypeCastingException
 	{
@@ -546,20 +521,12 @@ public abstract class Type implements Cloneable
 		{
 			linkedType.check( value, pathBuilder );
 		}
-<<<<<<< HEAD:jolie/src/jolie/runtime/typing/Type.java
-                
-                @Override
-                public Type getMinimalType( Value value ) {
-                        return linkedType.getMinimalType( value );
-                }
-=======
               
 		@Override
 		public Optional< Type > getMinimalType( Value value )
 		{
 			return linkedType.getMinimalType( value );
 		}
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:jolie/src/main/java/jolie/runtime/typing/Type.java
                 
 		@Override
 		protected Value cast( Value value, StringBuilder pathBuilder )

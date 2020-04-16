@@ -64,13 +64,8 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 		private final static String ALIAS = "alias";
 		private final static String OSC = "osc";
 		private final static String CLIENT_LOCATION = "clientLocation";
-<<<<<<< HEAD:extensions/jsonrpc/src/jolie/net/JsonRpcProtocol.java
-                private final static String CLIENT_OUTPUTPORT = "clientOutputPort";
-                private final static String IS_NULLABLE = "isNullable";
-=======
 		private final static String CLIENT_OUTPUTPORT = "clientOutputPort";
 		private final static String IS_NULLABLE = "isNullable";
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:extensions/jsonrpc/src/main/java/jolie/net/JsonRpcProtocol.java
 	}
 	
 	private final static String LSP = "lsp";
@@ -104,13 +99,8 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 		throws IOException
 	{
 		channel().setToBeClosed( !checkBooleanParameter( "keepAlive", true ) );
-<<<<<<< HEAD:extensions/jsonrpc/src/jolie/net/JsonRpcProtocol.java
-                boolean isLsp = checkStringParameter( Parameters.TRANSPORT, LSP);
-                
-=======
 		boolean isLsp = checkStringParameter( Parameters.TRANSPORT, LSP );
 
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:extensions/jsonrpc/src/main/java/jolie/net/JsonRpcProtocol.java
 		if ( !isLsp ) {
 			if ( !message.isFault() && message.hasGenericId() && inInputPort ) {
 				// JSON-RPC notification mechanism (method call with dropped result)
@@ -133,47 +123,19 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 				return;
 			}
 		}
-<<<<<<< HEAD:extensions/jsonrpc/src/jolie/net/JsonRpcProtocol.java
-                
-                String operationNameAliased = message.operationName();
-                //resolving aliases
-                if ( isLsp && hasParameter( Parameters.OSC ) ) {
-=======
 
 		String operationNameAliased = message.operationName();
 		//resolving aliases
 		if ( isLsp && hasParameter( Parameters.OSC ) ) {
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:extensions/jsonrpc/src/main/java/jolie/net/JsonRpcProtocol.java
 			Value osc = getParameterFirstValue( Parameters.OSC );
 			for( Entry<String, ValueVector> ev : osc.children().entrySet() ) {
 				Value v = ev.getValue().get( 0 );
 				if ( v.hasChildren( Parameters.ALIAS ) ) {
-<<<<<<< HEAD:extensions/jsonrpc/src/jolie/net/JsonRpcProtocol.java
-					if ( ev.getKey().equals(operationNameAliased ) ) {
-=======
 					if ( ev.getKey().equals( operationNameAliased ) ) {
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:extensions/jsonrpc/src/main/java/jolie/net/JsonRpcProtocol.java
 						operationNameAliased = v.getFirstChild( Parameters.ALIAS ).strValue();
 					}
 				}
 			}
-<<<<<<< HEAD:extensions/jsonrpc/src/jolie/net/JsonRpcProtocol.java
-                }
-                
-                 /*
-                 * While we build the full message
-                 * we type the entire message, so JsUtils class will convert 
-                 * it properly
-                 */
-                Type operationType = Type.UNDEFINED;
-                Interface channelInterface = channel().parentPort().getInterface();
-                String originalOpName = message.operationName();
-                Map< String, Type > subTypes = new HashMap<>();
-                subTypes.put( "jsonrpc", Type.create( NativeType.STRING, new Range( 1, 1 ), false, null ) );
-                subTypes.put( "id", Type.create( NativeType.INT, new Range( 0, 1 ), false, null ) );
-                Map<String,Type> paramsSubTypes = new HashMap<>();
-                
-=======
 		}
 
 		/*
@@ -188,7 +150,6 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 		subTypes.put( "id", Type.create( NativeType.INT, new Range( 0, 1 ), false, null ) );
 		Map< String, Type > paramsSubTypes = new HashMap<>();
 
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:extensions/jsonrpc/src/main/java/jolie/net/JsonRpcProtocol.java
 		if ( message.isFault() ) {
 			String jsonRpcId = jsonRpcIdMap.get( message.id() );
 			value.setFirstChild( "id", jsonRpcId != null ? jsonRpcId : Long.toString( message.id() ) );
@@ -197,69 +158,6 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 			error.getFirstChild( "message" ).setValue( message.fault().faultName() );
 			error.getChildren( "data" ).set( 0, message.fault().value() );
 		} else {
-<<<<<<< HEAD:extensions/jsonrpc/src/jolie/net/JsonRpcProtocol.java
-			boolean isRR =
-				channel().parentPort().getOperationTypeDescription( message.operationName(), message.resourcePath() )
-                                instanceof RequestResponseTypeDescription;
-                        //if we are in LSP, we want to be sure the message to be
-                        //a response to a request in order to send it with 
-                        //the fields "results" and "id"
-                        boolean check = isLsp ? isRR : true;
-                        if ( inInputPort && check ) {
-                                value.getChildren( "result" ).set( 0, message.value() );
-                                String jsonRpcId = jsonRpcIdMap.get( message.id() );
-                                value.getFirstChild( "id" ).setValue( jsonRpcId != null ? jsonRpcId : Long.toString( message.id() ) );
-                                
-                                if ( channelInterface.requestResponseOperations().containsKey( originalOpName ) ) {
-                                        operationType = channelInterface.requestResponseOperations().
-                                                get( originalOpName ).responseType();
-                                } else if ( channel().parentInputPort().getAggregatedOperation( originalOpName ) != null ) {
-                                        operationType = channel().parentInputPort().
-                                                getAggregatedOperation( originalOpName ).
-                                                getOperationTypeDescription().
-                                                asRequestResponseTypeDescription().responseType();
-                                }
-                                
-                                operationType = operationType.getMinimalType( message.value() );
-                                subTypes.put( "result", operationType );
-                        } else {
-                                jsonRpcOpMap.put(message.id() + "", operationNameAliased );
-                                value.getFirstChild( "method" ).setValue(operationNameAliased );
-
-                                if ( isRR ) {
-                                        if ( channelInterface.requestResponseOperations().containsKey( originalOpName ) ) {
-                                                operationType = channelInterface.requestResponseOperations().
-                                                        get( originalOpName ).requestType();
-                                        }
-                                } else {
-                                        if ( channelInterface.oneWayOperations().containsKey( originalOpName ) ) {
-                                                operationType = channelInterface.oneWayOperations().
-                                                        get( originalOpName ).requestType();
-                                        } 
-                                }
-
-                                operationType = operationType.getMinimalType( message.value() );
-                                
-                                if ( message.value().isDefined() || message.value().hasChildren() ) {
-                                        // some implementations need an array here
-                                        value.getFirstChild( "params" ).getChildren( JsUtils.JSONARRAY_KEY ).set( 0, message.value() );
-                                        paramsSubTypes.put( JsUtils.JSONARRAY_KEY, operationType );
-                                        subTypes.put( "params",  Type.create(NativeType.VOID, new Range( 0, 1 ), false, paramsSubTypes ) );
-                                }
-                                
-                                if ( !message.hasGenericId() && !isLsp ) {
-                                        value.getFirstChild( "id" ).setValue( message.id() );
-                                } 
-                        }
-		}
-                
-                Type fullMessageType = Type.create( NativeType.VOID, new Range( 1, 1 ), false, subTypes );
-		StringBuilder json = new StringBuilder();
-		JsUtils.valueToJsonString( value, true, fullMessageType, json );
-                String jsonMessage = json.toString();
-                
-                /*
-=======
 			boolean isRR
 				= channel().parentPort().getOperationTypeDescription( message.operationName(), message.resourcePath() ) instanceof RequestResponseTypeDescription;
 			//if we are in LSP, we want to be sure the message to be
@@ -322,7 +220,6 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 		String jsonMessage = json.toString();
 
 		/*
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:extensions/jsonrpc/src/main/java/jolie/net/JsonRpcProtocol.java
                  * LSP clients sometimes want a empty array for some fields,
                  * the only way to do in jolie is to have a type like the follwoing:
                  * t*: void
@@ -330,27 +227,6 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
                  * the problem is that JsUtils will convert this in "t": [null]
                  * with this we remove manually null values iff there is the parameter 
                  * osc."operationName".isNullable = true
-<<<<<<< HEAD:extensions/jsonrpc/src/jolie/net/JsonRpcProtocol.java
-                 */
-                if ( hasParameter( Parameters.OSC ) ) {
-                        Value osc = getParameterFirstValue( Parameters.OSC );
-                        String opName = message.operationName();
-                    
-                        if ( osc.hasChildren( opName ) ) {
-                            Value childOp = osc.getFirstChild( opName );
-                            //if osc has a child with opName and grandChild isNullable
-                            if ( childOp.hasChildren( Parameters.IS_NULLABLE ) ) {
-                                
-                                if ( childOp.getFirstChild( Parameters.IS_NULLABLE ).boolValue() ){
-                                    //then we replace all null with and empty string
-                                    //TODO use a regex 
-                                    jsonMessage = jsonMessage.replaceAll("null", "");
-                                }
-                            }
-                        }
-                }
-                
-=======
 		 */
 		if ( hasParameter( Parameters.OSC ) ) {
 			Value osc = getParameterFirstValue( Parameters.OSC );
@@ -369,7 +245,6 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 			}
 		}
 
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:extensions/jsonrpc/src/main/java/jolie/net/JsonRpcProtocol.java
 		ByteArray content = new ByteArray( jsonMessage.getBytes( "utf-8" ) );
 
 		if ( checkStringParameter( Parameters.TRANSPORT, LSP ) ) {
@@ -441,23 +316,6 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 	{
 		if ( checkStringParameter( Parameters.TRANSPORT, LSP ) ) {
 			if ( inInputPort && configurationPath().getValue().hasChildren( Parameters.CLIENT_LOCATION ) ) {
-<<<<<<< HEAD:extensions/jsonrpc/src/jolie/net/JsonRpcProtocol.java
-                            try {
-                                OutputPort op = interpreter.getOutputPort( 
-                                getParameterFirstValue( Parameters.CLIENT_OUTPUTPORT ).strValue() );
-                                if( op != null ) {
-                                        channel().parentPort().getInterface().merge( op.getInterface() );
-                                }
-                            } catch (InvalidIdException ex) {}
-                            if( !getParameterFirstValue( Parameters.CLIENT_LOCATION ).isDefined() ){
-                                    //Setting the outport to the channel
-                                    getParameterFirstValue( Parameters.CLIENT_LOCATION ).setValue( channel() );
-                            }
-			}
-			LSPParser parser = new LSPParser( istream );
-			LSPMessage message = parser.parse();
-                        //LSP supports only utf-8 encoding
-=======
 				try {
 					OutputPort op = interpreter.getOutputPort(
 						getParameterFirstValue( Parameters.CLIENT_OUTPUTPORT ).strValue() );
@@ -474,7 +332,6 @@ public class JsonRpcProtocol extends SequentialCommProtocol implements HttpUtils
 			LSPParser parser = new LSPParser( istream );
 			LSPMessage message = parser.parse();
 			//LSP supports only utf-8 encoding
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:extensions/jsonrpc/src/main/java/jolie/net/JsonRpcProtocol.java
 			String charset = "utf-8";
 			//encoding = message.getProperty( "accept-encoding" )             
 			return recv_createCommMessage( message.size(), message.content(), charset );

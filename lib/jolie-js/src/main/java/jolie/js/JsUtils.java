@@ -90,13 +90,8 @@ public class JsUtils
 
 	public static void valueToJsonString( Value value, boolean extendedRoot, Type type, StringBuilder builder ) throws IOException
 	{
-<<<<<<< HEAD:lib/jolie-js/src/jolie/js/JsUtils.java
-                if ( value.hasChildren( JSONARRAY_KEY ) ) {
-                        Type subType = ( type != null ? type.findSubType( JSONARRAY_KEY ) : null);
-=======
 		if ( value.hasChildren( JSONARRAY_KEY ) ) {
 			Type subType = ( type != null ? type.findSubType( JSONARRAY_KEY ) : null );
->>>>>>> 2bf9c0f4cb04a371b1d1e95e43643954cc532d79:lib/jolie-js/src/main/java/jolie/js/JsUtils.java
 			valueVectorToJsonString( value.children().get( JSONARRAY_KEY ), builder, true, subType );
 			return;
 		}
