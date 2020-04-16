@@ -1,23 +1,23 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Fabrizio Montesi <famontesi@gmail.com>          *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU Library General Public License as       *
- *   published by the Free Software Foundation; either version 2 of the    *
- *   License, or (at your option) any later version.                       *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU Library General Public     *
- *   License along with this program; if not, write to the                 *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- *                                                                         *
- *   For details about the authors of this software, see the AUTHORS file. *
- ***************************************************************************/
+/*
+ *   Copyright (C) 2008 by Fabrizio Montesi <famontesi@gmail.com>          
+ *                                                                         
+ *   This program is free software; you can redistribute it and/or modify  
+ *   it under the terms of the GNU Library General Public License as       
+ *   published by the Free Software Foundation; either version 2 of the    
+ *   License, or (at your option) any later version.                       
+ *                                                                         
+ *   This program is distributed in the hope that it will be useful,       
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         
+ *   GNU General Public License for more details.                          
+ *                                                                         
+ *   You should have received a copy of the GNU Library General Public     
+ *   License along with this program; if not, write to the                 
+ *   Free Software Foundation, Inc.,                                       
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             
+ *                                                                         
+ *   For details about the authors of this software, see the AUTHORS file. 
+ */
 
 include "types/JavaException.iol"
 include "types/IOException.iol"
@@ -33,11 +33,11 @@ type CopyDirRequest: void {
 	.to: string
 }
 
-type ReadFileRequest:void {
-	.filename:string
-	.format?:string { // "text" (default), "base64" (same as "binary" but afterwards base64-encoded), "binary", "xml" (a type-annotated XML format), "xml_store", "properties" (Java properties file) or "json"
-		.charset?:string // set the encoding. Default: system (eg. for Unix-like OS UTF-8), header specification (XML) or format's default (for XML and JSON UTF-8)
-		.skipMixedText?: bool // in case of format xml, it skips the mixed elements
+type ReadFileRequest {
+	filename:string
+	format?:string { // "text" (default), "base64" (same as "binary" but afterwards base64-encoded), "binary", "xml" (a type-annotated XML format), "xml_store", "properties" (Java properties file) or "json"
+		charset?:string // set the encoding. Default: system (eg. for Unix-like OS UTF-8), header specification (XML) or format's default (for XML and JSON UTF-8)
+		skipMixedText?: bool // in case of format xml, it skips the mixed elements
 	}
 }
 
@@ -123,7 +123,8 @@ RequestResponse:
 	 * - properties: each property is represented by a child value
 	 * - json: each attribute corresponds to a child value, the default values (attribute "$" or singular value) are saved as the base values, nested arrays get mapped with the "_" helper childs (e.g. a[i][j] -> a._[i]._[j]), the rest is filled in recursively
 	 */
-	readFile(ReadFileRequest)(undefined) throws FileNotFound(FileNotFoundType) IOException(IOExceptionType),
+	readFile(ReadFileRequest)(undefined)
+		throws FileNotFound(FileNotFoundType) IOException(IOExceptionType),
 
 	/**!
 	 * Writes a Jolie structure out to an external file
@@ -185,6 +186,10 @@ RequestResponse:
 	*/
 	exists( string )( bool ),
 
+	/** Returns the parent path of the service */
+	getServiceParentPath(void)(string),
+
+	/** Returns the filesystem directory from which the service has been launched */
 	getServiceDirectory(void)(string) throws IOException(IOExceptionType),
 	getFileSeparator(void)(string),
 	getMimeType(string)(string) throws FileNotFound(FileNotFoundType),

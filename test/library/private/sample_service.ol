@@ -1,13 +1,5 @@
-type T1: void
-
-type T2: void {
-  .field:string
-}
-
-interface TmpInterface {
-  RequestResponse:
-    tmp( T1 )( T2 )
-}
+include "SampleInterface.iol"
+include "console.iol"
 
 inputPort TPort {
   Location: "socket://localhost:9000"
@@ -16,7 +8,8 @@ inputPort TPort {
 }
 
 main {
-  tmp()() {
-    nullProcess
+  tmp()( response ) {
+    response.field = "test";
+    print@Console("")()
   }
 }

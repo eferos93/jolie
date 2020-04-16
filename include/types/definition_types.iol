@@ -1,39 +1,42 @@
- /****************************************************************************
-   Copyright 2010 by Claudio Guidi <cguidi@italianasoftware.com>
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-********************************************************************************/
-
-type Name: void {
-  .name: string
-  .domain?: string
-  .registry?: string       // if omitted = local
-}
+/*
+ *   Copyright (C) 2009 Claudio Guidi <cguidi@italianasoftware.com>
+ *                                                                        
+ *   This program is free software; you can redistribute it and/or modify 
+ *   it under the terms of the GNU Library General Public License as      
+ *   published by the Free Software Foundation; either version 2 of the   
+ *   License, or (at your option) any later version.                      
+ *                                                                        
+ *   This program is distributed in the hope that it will be useful,      
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of       
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        
+ *   GNU General Public License for more details.                         
+ *                                                                        
+ *   You should have received a copy of the GNU Library General Public    
+ *   License along with this program; if not, write to the                
+ *   Free Software Foundation, Inc.,                                      
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.            
+ *                                                                        
+ *   For details about the authors of this software, see the AUTHORS file.
+ */
 
 type NativeType: void {
-  .string_type?: bool
-  .int_type?: bool
-  .double_type?: bool
-  .any_type?: bool
-  .void_type?: bool
-  .raw_type?: bool
-  //.undefined_type?: bool
-  .bool_type?: bool
-  .long_type?: bool
-  .link?: void {
-     .name: string
-     .domain?: string
-  }
-}
+  .string_type: bool
+} | void {
+  .int_type: bool
+} | void {
+  .double_type: bool
+} | void {
+  .any_type: bool
+} | void {
+  .void_type: bool
+} | void {
+  .raw_type: bool
+} | void {
+  .bool_type: bool
+} | void {
+  .long_type: bool
+} 
+
 
 type Cardinality: void {
   .min: int
@@ -44,47 +47,68 @@ type Cardinality: void {
 type SubType: void {
   .name: string
   .cardinality: Cardinality
-  .type_inline?: Type
-  .type_link?: Name
+  .type: Type
+  .documentation?: string
 }
 
-type Type: void {
-  .name: Name
+type TypeInLine: void {
   .root_type: NativeType
   .sub_type*: SubType
 }
 
+type TypeLink: void {
+  .link_name: string
+}
+
+type TypeChoice: void {
+  .choice: void {
+      .left_type: TypeInLine | TypeLink 
+      .right_type: Type
+  }
+}
+
+type TypeUndefined: void {
+  .undefined: bool
+}
+
+type Type: TypeInLine | TypeLink | TypeChoice | TypeUndefined 
+
+type TypeDefinition: void {
+  .name: string
+  .type: Type
+  .documentation?: string
+}
+
+
 type Fault: void {
-  .name: Name
-  .type_name?: Name
+  .name: string
+  .type: NativeType | TypeUndefined | TypeLink
 }
 
 type Operation: void {
   .operation_name: string
-  .documentation?: any
-  .input: Name
-  .output?: Name
+  .documentation?: string
+  .input: string
+  .output?: string
   .fault*: Fault
 }
 
 type Interface: void {
-  .name: Name
-  .types*: Type
+  .name: string
+  .types*: TypeDefinition
   .operations*: Operation
+  .documentation?: string
 }
 
 type Port: void {
-  .name: Name
+  .name: string
   .protocol: string
   .location: any
   .interfaces*: Interface
 }
 
 type Service: void {
-  .name: Name
-  .input*: void {
-    .name: string
-    .domain: string
-  }
-  .output*: Name
+  .name: string
+  .input*: string
+  .output*: string
 }

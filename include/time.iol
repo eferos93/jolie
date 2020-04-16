@@ -1,23 +1,23 @@
-/***************************************************************************
- *   Copyright (C) 2008 by Fabrizio Montesi <famontesi@gmail.com>          *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU Library General Public License as       *
- *   published by the Free Software Foundation; either version 2 of the    *
- *   License, or (at your option) any later version.                       *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU Library General Public     *
- *   License along with this program; if not, write to the                 *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- *                                                                         *
- *   For details about the authors of this software, see the AUTHORS file. *
- ***************************************************************************/
+/*
+ *   Copyright (C) 2008 by Fabrizio Montesi <famontesi@gmail.com>          
+ *                                                                         
+ *   This program is free software; you can redistribute it and/or modify  
+ *   it under the terms of the GNU Library General Public License as       
+ *   published by the Free Software Foundation; either version 2 of the    
+ *   License, or (at your option) any later version.                       
+ *                                                                         
+ *   This program is distributed in the hope that it will be useful,       
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         
+ *   GNU General Public License for more details.                          
+ *                                                                         
+ *   You should have received a copy of the GNU Library General Public     
+ *   License along with this program; if not, write to the                 
+ *   Free Software Foundation, Inc.,                                       
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             
+ *                                                                         
+ *   For details about the authors of this software, see the AUTHORS file. 
+ */
 
 
 /**
@@ -122,8 +122,17 @@ interface TimeInterface{
 		*/
 		setNextTimeout(SetNextTimeOutRequest),
 		setNextTimeoutByDateTime, setNextTimeoutByTime,
+		/**! It stops the current timeout previously set with a setNextTimeout */
+		stopNextTimeout( void )
 	RequestResponse:
-		getCurrentDateTime(CurrentDateTimeRequestType)(string), sleep,
+			/**!
+		* Cancels a timeout from a long-value created from #scheduleTimeout
+		*/
+		cancelTimeout(long)(bool),
+
+		getCurrentDateTime(CurrentDateTimeRequestType)(string), 
+		
+		sleep,
 
 		/**!
 		* It returns a date time in a string format starting from a timestamp
@@ -155,12 +164,10 @@ interface TimeInterface{
 		/**!
 		* Schedules a timeout, which can be cancelled using #cancelTimeout from the returned string. Default .timeunit value is MILLISECONDS, .operation default is "timeout".
 		*/
-		scheduleTimeout(ScheduleTimeOutRequest)(long) throws InvalidTimeUnit,
-		/**!
-		* Cancels a timeout from a long-value created from #scheduleTimeout
-		*/
-		cancelTimeout(long)(bool)
+		scheduleTimeout(ScheduleTimeOutRequest)(long) throws InvalidTimeUnit
+
 }
+
 
 outputPort Time {
 	Interfaces: TimeInterface
